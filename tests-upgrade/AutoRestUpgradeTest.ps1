@@ -4,18 +4,21 @@
 # #please use substring to select the compare path
 #     $m3Path='.\generate\m3'
 #     $m4Path='.\generate\m4'
+mkdir CompareResult
 $scriptPath = Get-Location
 $global:isError = $false
 $conf = (Get-Content 'Configuration.json') | ConvertFrom-Json
 $conf
 if($AllowList)
 {
+    Write-Host -ForegroundColor blue 'Start to execute AllowList'
     # $configurationFileName = $scriptPath.path +'\AllowListConfiguration.csv'
     # $testList = import-Csv $configurationFileName
     $testList = $conf.WhiteList
 }
 if($BlackList)
 {
+    Write-Host -ForegroundColor blue 'Start to execute BlackList'
     # $blackConfigurationFileName = $scriptPath.path +'\BlackListConfiguration.csv'
     # $blackTestList = import-Csv $blackConfigurationFileName
     $blackTestList = $conf.BlackList
@@ -53,6 +56,7 @@ function isNeedIgnore([string]$inputFileName , [Array]$ignoreArray)
 
 function Generate()
 {
+    Write-Host -ForegroundColor blue 'Start to generate'
     ##m3 and m4 all need to be generated
     if((-not $M3) -and (-not $M4))
     {
@@ -71,7 +75,7 @@ function Generate()
 
 function CompareTest([string]$inputm3Path,[string]$inputm4Path,[string]$testFileName)
 {
-    $testFileName
+    Write-Host -ForegroundColor blue 'Comparing'
     #to creare ecah dictionary (the struct is (string,obj))
     #the key is the path of each file,and the obj has two parameters(hashcodevalue,status)
     $initialDict =  @{}
@@ -193,7 +197,8 @@ function CompareTest([string]$inputm3Path,[string]$inputm4Path,[string]$testFile
     {
         $global:isError=$True
     }
-    $filename = $scriptPath.Path + '\CompareResult\' + $testFileName + (get-date -format 'yyyyMMddhhmmss')+'.csv'
+    $filename = $scriptPath.Path + '\CompareResult\' + $testFileName + (get-date -format 'yyyyMMdd')+'.csv'
+    Write-Host -ForegroundColor green 'Export file:'+$filename
     $difArray | Select-Object -Property fileName,Path,fileFolderName,Status | Export-CSV -path $filename
 }
 
@@ -202,6 +207,7 @@ $fileList = Get-ChildItem
 #if only one case
 if($TestName -ne $null -and ($TestName -ne ''))
 {
+    Write-Host -ForegroundColor blue 'One case'
     $currentDetailPath = Get-Location
     cd ($currentDetailPath.Path+'\'+$TestName)
     $deatilPath = $currentDetailPath.Path + 'generate'
@@ -214,6 +220,7 @@ if($TestName -ne $null -and ($TestName -ne ''))
     }
 }elseif($AllowList)
 {
+    Write-Host -ForegroundColor blue 'Allow case list'
     $currentDetailPath = Get-Location
     #get each testfolder
     foreach($eachTest in $testList)
@@ -234,6 +241,7 @@ if($TestName -ne $null -and ($TestName -ne ''))
     }
 }elseif($BlackList)
 {
+    Write-Host -ForegroundColor blue 'Black case list'
     $currentDetailPath = Get-Location
     $currentDetailPath
     #get each testfolder
@@ -260,6 +268,7 @@ else
 {
     foreach($fileDetail in $fileList)
     {
+        Write-Host -ForegroundColor blue 'Each case'
         # $currentDetailPath = Get-Location
         if($fileDetail.Mode -eq 'd----' -and (!$fileDetail.Name.Startswith('Compare')))
         {
