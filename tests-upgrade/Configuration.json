@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "WhiteList": [
     "basic-spec-required",
     "basic-spec-root",
@@ -35,4 +36,7 @@
     "datamodels-combineschema",
     "datamodels-inheritpolymorphism"
   ]
+=======
+	"WhiteList":["basic-get","basic-get-delete"]
+>>>>>>> parent of d76212e... Add case and script
 }
